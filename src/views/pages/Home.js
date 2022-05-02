@@ -3,9 +3,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import { FhirClientContext } from "../../Context/FhirClientContext";
 // Import SMART Query helper function
 import { SMARTRequest } from "../../utils/SMARTRequest.js";
-
-//MUI
-import { Typography, Box, FormLabel, FormControl, FormControlLabel, Radio, RadioGroup, Input } from '@mui/material';
+// MUI Components
+import { Typography, Box, FormLabel, FormControl, FormControlLabel, Radio, RadioGroup, Input, Button, Grid } from '@mui/material';
+// Resut Dialog Component
+import ResultDialog from '../Component/ResultDialog'
 
 function Home(props) {
     // FHIR Client Context
@@ -24,20 +25,40 @@ function Home(props) {
         useInhibitors: true,
         gender: 'male'
     });
+    const [resultDialogOpen, setResultDialogOpen] = useState(false);
     
     const handleChange = (event) => {
         setState({...state, [event.target.name]: event.target.value});
     };
+
+    const handleSubmit = () =>{
+        setResultDialogOpen(true)
+    }
+
+    const sanitizeData = () => {}
+
+    useEffect(()=>{
+        Promise.all([
+          // get patient data
+          SMARTRequest(`Patient?_id=${client.patient.id}&_pretty=true`, client),
+          // get length
+          SMARTRequest(`Observation?code=http://loinc.org%7C8302-2&_pretty=true&patient=${client.patient.id}`, client),
+          // get weight
+          SMARTRequest(`Observation?code=http://loinc.org%7C29463-7&_pretty=true&patient=${client.patient.id}`, client),
+          // get head circumference 
+          SMARTRequest(`Observation?code=http://loinc.org%7C9843-4&_pretty=true&patient=${client.patient.id}`, client)
+        ]).then(allResponses => {
+          sanitizeData(...allResponses)
+        })
+      }, [])
 
     // useEffect(()=>{
     //     console.log(state)
     // }, [state])
     
 	return (
-      <React.Fragment>
-        <Typography mx={3} mt={2} variant="h5"> Coivd Risk Assessment</Typography>
-
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            <Typography xs={12} mx={3} mt={2} variant="h5"> Coivd Risk Assessment</Typography>
             <FormControl sx={{ mx: 3, mt: 2 }}>
                 <FormLabel>1. Has Dementia?</FormLabel>
                 <RadioGroup row name="dementia" value={state.dementia} onChange={event => handleChange(event)}>
@@ -102,11 +123,9 @@ function Home(props) {
                     <FormControlLabel value="male" control={<Radio />} label="Male" />
                 </RadioGroup>
             </FormControl>
-
-            
+            <Button variant="contained" onClick={handleSubmit}>Submit</Button>    
+            <ResultDialog open={resultDialogOpen} setOpen={setResultDialogOpen}/>
         </Box>
-
-      </React.Fragment>
     )
 }
 
