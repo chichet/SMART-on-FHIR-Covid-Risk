@@ -4,7 +4,7 @@ import { FhirClientContext } from "../../Context/FhirClientContext";
 // Import SMART Query helper function
 import { SMARTRequest } from "../../utils/SMARTRequest.js";
 // MUI Components
-import { Typography, Box, FormLabel, FormControl, FormControlLabel, Radio, RadioGroup, Input, Button, Grid } from '@mui/material';
+import { Typography, Box, FormLabel, FormControl, FormControlLabel, Radio, RadioGroup, Input, Button } from '@mui/material';
 // Resut Dialog Component
 import ResultDialog from '../Component/ResultDialog'
 
