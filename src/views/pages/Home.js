@@ -26,16 +26,20 @@ function Home(props) {
         gender: 'male'
     });
     const [resultDialogOpen, setResultDialogOpen] = useState(false);
+
+    const sanitizeData = () => {}
     
     const handleChange = (event) => {
         setState({...state, [event.target.name]: event.target.value});
     };
 
     const handleSubmit = () =>{
-        setResultDialogOpen(true)
+        // GET request using fetch inside useEffect React hook
+        fetch('https://api.npms.io/v2/search?q=react')
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .then(setResultDialogOpen(true));
     }
-
-    const sanitizeData = () => {}
 
     useEffect(()=>{
         Promise.all([
